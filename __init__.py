@@ -88,7 +88,7 @@ class HospitalFallback(FallbackSkill):
         self.gui.show_text(symptom["emoji"])
         did_i_get_that = self.ask_yesno(
             'symptoms.fallback', {"symptom": symptom["name"]})
-        if not did_i_get_that:
+        if did_i_get_that == "no":
             self.speak_dialog('sorry')
         else:
             if symptom["covid"]:
