@@ -9,6 +9,7 @@ from mycroft import FallbackSkill, intent_file_handler
 import json
 from fastai.text import *
 
+BASEPATH = '/opt/mycroft/skills/hospital-triage-skill.montali/'
 
 class HospitalFallback(FallbackSkill):
     """Main skill class for the triage.
@@ -27,10 +28,10 @@ class HospitalFallback(FallbackSkill):
         self.register_fallback(self.handle_fallback, 10)
         self.med_record = {}
         # Load the classifier model
-        self.learner = load_learner('models', 'exported_model')
+        self.learner = load_learner(BASEPATH+'models', 'exported_model')
 
         # Load the classifier classes from JSON
-        with open('classes.json') as classes:
+        with open(BASEPATH+'classes.json') as classes:
             self.classes = json.load(classes)
 
     def symptom_handler(handler):
@@ -327,4 +328,4 @@ def create_skill():
     """Creates the skill for the Mycroft bot using the 
     skill class.
     """
-    return HospitalTriage()
+    return HospitalFallback()
