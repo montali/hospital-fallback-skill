@@ -11,6 +11,7 @@ from fastai.text import *
 
 BASEPATH = '/opt/mycroft/skills/hospital-triage-skill.montali/'
 
+
 class HospitalFallback(FallbackSkill):
     """Main skill class for the triage.
 
@@ -45,13 +46,14 @@ class HospitalFallback(FallbackSkill):
         """
         def ask_about_symptoms(*args, **kwargs):
             returned = handler(*args, **kwargs)
-            args[0].med_record["symptom_declaration"] = args[1].data["utterance"]
-            # I'm using args[0] here instead of self, but it works the same
-            args[0].request_age()
-            args[0].request_other_symptoms()
-            args[0].evaluate_pain()
-            args[0].request_name()
-            args[0].export_med_record()
+            if args[0].did_i_get_that:
+                args[0].med_record["symptom_declaration"] = args[1].data["utterance"]
+                # I'm using args[0] here instead of self, but it works the same
+                args[0].request_age()
+                args[0].request_other_symptoms()
+                args[0].evaluate_pain()
+                args[0].request_name()
+                args[0].export_med_record()
             return returned
         return ask_about_symptoms
 
@@ -90,8 +92,10 @@ class HospitalFallback(FallbackSkill):
         did_i_get_that = self.ask_yesno(
             'symptoms.fallback', {"symptom": symptom["name"]})
         if did_i_get_that == "no":
+            self.did_i_get_that = False
             self.speak_dialog('sorry')
         else:
+            self.did_i_get_that = True
             if symptom["covid"]:
                 self.ask_covid_questions()
             self.med_record["main_symptom"] = symptom["name"]
